@@ -2,6 +2,15 @@
 
 A port of https://github.com/pmocz/activematter-python 
 
+## Building
+
+```bash
+sudo apt-get install libblas-dev
+```
+
+```bash
+make -B
+```
 
 ## Copyright notice
 
