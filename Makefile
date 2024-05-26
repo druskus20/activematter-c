@@ -18,7 +18,7 @@ PROFILE_TARGETS = dumb_profile
 # Source files
 BLAS_SRCS = main_blas.c 
 DUMB_SRCS = main_dumb.c 
-EXTRA = utils.h
+EXTRA = 
 
 # Object files
 BLAS_OBJS = $(BLAS_SRCS:.c=.o) 
