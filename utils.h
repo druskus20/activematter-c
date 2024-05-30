@@ -42,9 +42,9 @@ void print_time(double t, char *unit) {
   printf("Time: %f %s\n", t, unit);
 }
 
-void print_flock_positions(int step, double *x, double *y, int n) {
+void print_flock_positions(int step, double *x, double *y, double *vx, double *vy, int n) {
     for (int i = 0; i < n; i++) {
-        printf("%d %d %f %f\n", step, i, x[i], y[i]);
+        printf("%d %d %f %f %f %f\n", step, i, x[i], y[i], vx[i], vy[i]);
     }
 }
 
