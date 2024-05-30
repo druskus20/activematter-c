@@ -10,7 +10,7 @@
 #define R 1.0
 #define DT 0.2
 #define NT 1000
-#define N 5000 
+#define N_DEFAULT 5000 
 
 
 

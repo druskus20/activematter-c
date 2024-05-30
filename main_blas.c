@@ -100,22 +100,24 @@ void update_velocities(double *vx, double *vy, double *theta, int n) {
   }
 }
 
-int main() {
+int main(int argc, char **argv) {
+  int n = parse_n(argc, argv);
+
   srand(time(NULL));
 
-  double x[N], y[N], vx[N], vy[N], theta[N], mean_theta[N];
+  double x[n], y[n], vx[n], vy[n], theta[n], mean_theta[n];
 
-  initialize_positions(x, y, N, L);
-  initialize_velocities(vx, vy, theta, N);
+  initialize_positions(x, y, n, L);
+  initialize_velocities(vx, vy, theta, n);
 
   double t_start = get_time_ns();
   for (int t = 0; t < NT; t++) {
-    update_positions(x, y, vx, vy, N, DT);
-    apply_periodic_boundary_conditions(x, y, N, L);
-    calculate_mean_theta(mean_theta, theta, x, y, N, R);
-    update_theta(theta, mean_theta, N);
-    update_velocities(vx, vy, theta, N);
-    if (PRINT) print_flock_positions(t, x, y, vx, vy, N);
+    update_positions(x, y, vx, vy, n, DT);
+    apply_periodic_boundary_conditions(x, y, n, L);
+    calculate_mean_theta(mean_theta, theta, x, y, n, R);
+    update_theta(theta, mean_theta, n);
+    update_velocities(vx, vy, theta, n);
+    if (PRINT) print_flock_positions(t, x, y, vx, vy, n);
   }
   double t_end = get_time_ns();
   print_time(time_to_unit(t_end - t_start, "ns", TIME_UNIT), TIME_UNIT);

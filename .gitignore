@@ -2,6 +2,8 @@
 *.gcno  
 *.gcda
 *.o     
-blas
-dumb
-
+/blas
+/dumb
+/mpi
+/omp
+/build

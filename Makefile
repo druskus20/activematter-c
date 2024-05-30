@@ -1,6 +1,5 @@
 # Compiler
 CC = gcc
-
 PROFILE_CFLAGS =  
 #PROFILE_CFLAGS =  -fprofile-arcs -ftest-coverage 
 # Compiler flags
@@ -29,7 +28,7 @@ OMP_OBJS = $(OMP_SRCS:.c=.o)
 MPI_OBJS = $(MPI_SRCS:.c=.o)
 
 # Default target
-all: $(TARGETS)
+all: $(TARGETS) pack
 
 # BLAS target
 blas: $(BLAS_OBJS) 
@@ -53,14 +52,16 @@ main_mpi.o: main_mpi.c
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LIBS)
 
+pack: 
+	mkdir -p build
+	for exe in $(TARGETS); do mv "$$exe" "build/c_$$(basename "$$exe")"; done
 
 # Clean up build files
 clean:
-	rm -f $(BLAS_OBJS) $(DUMB_OBJS) $(OMP_OBJS) $(TARGETS) 
+	rm -rf $(BLAS_OBJS) $(DUMB_OBJS) $(OMP_OBJS) $(TARGETS) build 
 
 clean_profile: 
 	rm -rf *.gcda *.gcno *.gcov
 
 # PHONY targets to avoid conflicts with files of the same name
-.PHONY: all clean_profile clean
-
+.PHONY: all clean_profile clean pack

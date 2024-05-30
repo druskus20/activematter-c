@@ -5,6 +5,22 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include "params.h"
+
+
+size_t parse_n(int argc, char **argv) {
+    // Parse command line argument into usize
+    size_t n = N_DEFAULT;
+    if (argc >= 2) {
+        char *endptr;
+        long int parsed = strtol(argv[1], &endptr, 10);
+        if (*endptr == '\0') { // Check if conversion was successful
+            n = (size_t)parsed;
+        }
+    }
+
+    return n;
+}
 
 double get_time_ns() {
     struct timespec ts;

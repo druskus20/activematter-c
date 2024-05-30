@@ -64,10 +64,11 @@ void update_velocities(double *vx, double *vy, double *theta, int n, int start, 
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
+  int n = parse_n(argc, argv);
     srand(1);
 
-    double x[N], y[N], vx[N], vy[N], theta[N], mean_theta[N];
+    double x[n], y[n], vx[n], vy[n], theta[n], mean_theta[n];
 
     double t_start = get_time_ns();
 
@@ -77,29 +78,29 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
 
-    int birds_per_proc = N / num_ranks;
+    int birds_per_proc = n / num_ranks;
     int start = rank * birds_per_proc;
-    int end = (rank == num_ranks - 1) ? N : start + birds_per_proc;
+    int end = (rank == num_ranks - 1) ? n : start + birds_per_proc;
 
-    initialize_velocities(vx, vy, theta, N);
-    initialize_positions(x, y, N, L);
+    initialize_velocities(vx, vy, theta, n);
+    initialize_positions(x, y, n, L);
 
     for (int t = 0; t < NT; t++) {
-        update_positions(x, y, vx, vy, N, DT);
-        apply_periodic_boundary_conditions(x, y, N, L);
+        update_positions(x, y, vx, vy, n, DT);
+        apply_periodic_boundary_conditions(x, y, n, L);
 
         // calculate mean_theta with MPI
-        calculate_mean_theta(mean_theta, theta, x, y, N, R, start, end);
+        calculate_mean_theta(mean_theta, theta, x, y, n, R, start, end);
         MPI_Allgather(&mean_theta[start], birds_per_proc, MPI_DOUBLE, mean_theta, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
 
         // update theta and velocities with MPI
-        update_theta(theta, mean_theta, N, start, end);
-        update_velocities(vx, vy, theta, N, start, end);
+        update_theta(theta, mean_theta, n, start, end);
+        update_velocities(vx, vy, theta, n, start, end);
         MPI_Allgather(&theta[start], birds_per_proc, MPI_DOUBLE, theta, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
         MPI_Allgather(&vx[start], birds_per_proc, MPI_DOUBLE, vx, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
         MPI_Allgather(&vy[start], birds_per_proc, MPI_DOUBLE, vy, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
 
-        if (PRINT) print_flock_positions(t, x, y, vx, vy, N);
+        if (PRINT) print_flock_positions(t, x, y, vx, vy, n);
     }
 
     double t_end = get_time_ns();
