@@ -12,6 +12,12 @@ sudo apt-get install libblas-dev
 make -B
 ```
 
+## Running
+
+```sh
+./main_<name> <N_BIRDS>
+```
+
 ## Copyright notice
 
 This is based on the original work of Philip Mocz (2021) Princeton Univeristy,
