@@ -1,7 +1,7 @@
 #ifndef PARAMS_H
 #define PARAMS_H
 
-#define PRINT 1
+#define PRINT 0
 #define TIME_UNIT "s" // s, ms, us, ns
 
 #define V0 1.0

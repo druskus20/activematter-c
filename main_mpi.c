@@ -65,7 +65,7 @@ void update_velocities(double *vx, double *vy, double *theta, int n, int start, 
 }
 
 int main(int argc, char **argv) {
-  int n = parse_n(argc, argv);
+    int n = parse_n(argc, argv);
     srand(1);
 
     double x[n], y[n], vx[n], vy[n], theta[n], mean_theta[n];
@@ -85,20 +85,27 @@ int main(int argc, char **argv) {
     initialize_velocities(vx, vy, theta, n);
     initialize_positions(x, y, n, L);
 
+    // Allocate separate send and receive buffers for MPI
+    double local_mean_theta[birds_per_proc];
+    double local_theta[birds_per_proc];
+    double local_vx[birds_per_proc];
+    double local_vy[birds_per_proc];
+
     for (int t = 0; t < NT; t++) {
         update_positions(x, y, vx, vy, n, DT);
         apply_periodic_boundary_conditions(x, y, n, L);
 
         // calculate mean_theta with MPI
-        calculate_mean_theta(mean_theta, theta, x, y, n, R, start, end);
-        MPI_Allgather(&mean_theta[start], birds_per_proc, MPI_DOUBLE, mean_theta, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
+        calculate_mean_theta(local_mean_theta, theta, x, y, n, R, start, end);
+        MPI_Allgather(local_mean_theta, birds_per_proc, MPI_DOUBLE, mean_theta, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
 
         // update theta and velocities with MPI
-        update_theta(theta, mean_theta, n, start, end);
-        update_velocities(vx, vy, theta, n, start, end);
-        MPI_Allgather(&theta[start], birds_per_proc, MPI_DOUBLE, theta, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
-        MPI_Allgather(&vx[start], birds_per_proc, MPI_DOUBLE, vx, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
-        MPI_Allgather(&vy[start], birds_per_proc, MPI_DOUBLE, vy, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
+        update_theta(local_theta, mean_theta, n, start, end);
+        update_velocities(local_vx, local_vy, local_theta, n, start, end);
+
+        MPI_Allgather(local_theta, birds_per_proc, MPI_DOUBLE, theta, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
+        MPI_Allgather(local_vx, birds_per_proc, MPI_DOUBLE, vx, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
+        MPI_Allgather(local_vy, birds_per_proc, MPI_DOUBLE, vy, birds_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
 
         if (PRINT) print_flock_positions(t, x, y, vx, vy, n);
     }
